@@ -1,22 +1,20 @@
 #include <cstdint>
 #include <stdint.h>
 
+class Memory {
+public:
+  Memory(uint16_t size);
+  ~Memory();
+  uint8_t *buffer;
+};
+
 class Cpu {
 
 public:
   Cpu();
 
 private:
-  enum RegName {
-    a = 0,
-    b,
-    c,
-    d,
-    e,
-    f,
-    h,
-    l
-  }
+  enum RegName { a = 0, b, c, d, e, f, h, l };
 
   struct Register {
     uint8_t val[8];
@@ -48,13 +46,24 @@ private:
   };
 
   enum Instruction {
-    LOAD_REG_REG,
-    LOAD_REG_IMM,
-    LOAD_REG_IND_HL,
-    LOAD_ACC_IND_BC,
-    STORE_REG_IND_HL,
-    STORE_IMM_IND_HL
+    STORE_A_IND_BC = 0x02,
+    STORE_A_IND_DE = 0x12,
+    LOAD_A_IND_BC = 0x0A,
+    LOAD_A_IND_DE = 0x1A,
+    STORE_IMM_IND_HL = 0x36,
+    STORE_A_DIR = 0xEA,
+    LOADH_A_IND_C = 0xF2,
+    LOAD_A_DIR = 0xFA,
   };
 
   void execute(Instruction ins);
+
+  void write_byte(uint8_t data, uint16_t addr, Memory &mem);
+  void write_word(uint16_t data, uint16_t addr, Memory &mem);
+  uint8_t read_byte(uint16_t addr, Memory &mem);
+  uint16_t read_word(uint16_t addr, Memory &mem);
+
+  Memory mem;
+  Register reg;
+  FlagRegister flagReg;
 };
