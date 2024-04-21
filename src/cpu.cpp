@@ -7,6 +7,8 @@ Memory::~Memory() { delete buffer; }
 
 Cpu::Cpu() : mem(Memory(0xFFFF)) {}
 
+void Cpu::run() { execute(static_cast<Instruction>(0x00)); }
+
 void Cpu::execute(Instruction opcode) {
   switch (opcode) {
   case STORE_A_IND_BC: {

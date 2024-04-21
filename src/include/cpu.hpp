@@ -12,6 +12,7 @@ class Cpu {
 
 public:
   Cpu();
+  void run();
 
 private:
   enum RegName { a = 0, b, c, d, e, f, h, l };
