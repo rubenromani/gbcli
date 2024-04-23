@@ -1,4 +1,4 @@
-#include "include/cpu.hpp"
+#include "cpu.hpp"
 #include <cstdint>
 #include <cstdio>
 
@@ -47,7 +47,7 @@ void Cpu::execute(Instruction opcode) {
     reg.val[RegName::a] = read_byte(addr, mem);
   }
   default: {
-    printf("Error: Unknown instruction");
+    printf("Error: Unknown instruction\n");
     break;
   }
   }
