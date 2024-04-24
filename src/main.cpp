@@ -2,6 +2,6 @@
 
 int main(int argc, char *argv[]) {
   Cpu cpu = Cpu();
-  cpu.run();
+  cpu.run(1);
   return 0;
 }

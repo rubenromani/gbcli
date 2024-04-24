@@ -2,12 +2,21 @@
 #include <cstdint>
 #include <cstdio>
 
-Memory::Memory(uint16_t size) { buffer = new uint8_t[size]; }
-Memory::~Memory() { delete buffer; }
+Memory::Memory() {}
+Memory::~Memory() {}
 
-Cpu::Cpu() : mem(Memory(0xFFFF)) {}
+Cpu::Cpu() { mem = Memory(); }
 
-void Cpu::run() { execute(static_cast<Instruction>(0x00)); }
+void Cpu::run(uint32_t n_exec) {
+  for (uint32_t i = 0; i < n_exec; i++) {
+    Instruction opcode = fetch();
+    execute(opcode);
+  }
+}
+
+Cpu::Instruction Cpu::fetch() {
+  return static_cast<Instruction>(mem.buffer[reg.pc++]);
+}
 
 void Cpu::execute(Instruction opcode) {
   switch (opcode) {

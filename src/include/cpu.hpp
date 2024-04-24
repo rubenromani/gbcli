@@ -3,18 +3,17 @@
 
 class Memory {
 public:
-  Memory(uint16_t size);
+  Memory();
   ~Memory();
-  uint8_t *buffer;
+  uint8_t buffer[0xFFFF];
 };
 
 class Cpu {
 
 public:
   Cpu();
-  void run();
+  void run(uint32_t n_exec);
 
-private:
   enum RegName { a = 0, b, c, d, e, f, h, l };
 
   struct Register {
@@ -57,6 +56,7 @@ private:
     LOAD_A_DIR = 0xFA,
   };
 
+  Instruction fetch();
   void execute(Instruction ins);
 
   void write_byte(uint8_t data, uint16_t addr, Memory &mem);
