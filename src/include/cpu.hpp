@@ -47,8 +47,8 @@ public:
 
   enum Instruction {
     STORE_A_IND_BC = 0x02,
-    STORE_A_IND_DE = 0x12,
     LOAD_A_IND_BC = 0x0A,
+    STORE_A_IND_DE = 0x12,
     LOAD_A_IND_DE = 0x1A,
     STORE_IMM_IND_HL = 0x36,
     STORE_A_DIR = 0xEA,

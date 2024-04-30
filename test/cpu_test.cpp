@@ -16,6 +16,7 @@ public:
   void SetUp() override {
     cpu_ = Cpu();
     resetRegs();
+    resetMemory();
   }
 
   void TearDown() override {
@@ -36,8 +37,10 @@ public:
     cpu_.reg.sp = 0;
   }
 
-  void setMemory(const uint8_t src[4096]) {
-    for (uint16_t i = 0; i < 4096; i++) {
+  void resetMemory() { memset(cpu_.mem.buffer, 0x00, 0xFFFF); }
+
+  void setMemory(const uint8_t src[0xFFFF]) {
+    for (uint16_t i = 0; i < 0xFFFF; i++) {
       cpu_.mem.buffer[i] = src[i];
     }
   }
@@ -50,6 +53,29 @@ TEST_F(CpuTest, Test_STORE_A_IND_BC_instruction) {
   cpu_.reg.val[Cpu::RegName::a] = 0xFF;
   cpu_.run(1);
   EXPECT_EQ(cpu_.mem.buffer[0], 0xFF);
+}
+
+TEST_F(CpuTest, Test_STORE_A_IND_DE_instruction) {
+  cpu_.mem.buffer[0] = 0x12; // STORE_A_IND_DE
+  cpu_.reg.val[Cpu::RegName::a] = 0xFF;
+  cpu_.run(1);
+  EXPECT_EQ(cpu_.mem.buffer[0], 0xFF);
+}
+
+TEST_F(CpuTest, Test_LOAD_A_IND_BC_instruction) {
+  cpu_.mem.buffer[0] = 0x0A; // LOAD_A_IND_BC
+  cpu_.mem.buffer[1] = 0x33, cpu_.reg.val[Cpu::RegName::a] = 0x00;
+  cpu_.reg.set_bc(0x0001);
+  cpu_.run(1);
+  EXPECT_EQ(cpu_.reg.val[Cpu::RegName::a], 0x33);
+}
+
+TEST_F(CpuTest, Test_LOAD_A_IND_DE_instruction) {
+  cpu_.mem.buffer[0] = 0x1A; // LOAD_A_IND_DE
+  cpu_.mem.buffer[1] = 0x33, cpu_.reg.val[Cpu::RegName::a] = 0x00;
+  cpu_.reg.set_de(0x0001);
+  cpu_.run(1);
+  EXPECT_EQ(cpu_.reg.val[Cpu::RegName::a], 0x33);
 }
 
 int main(int argc, char **argv) {
