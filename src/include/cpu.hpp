@@ -8,7 +8,12 @@ public:
   uint8_t buffer[0xFFFF];
 };
 
-class Cpu {
+class ICpu {
+public:
+  virtual void run(uint32_t n_exec) = 0;
+};
+
+class Cpu : public ICpu {
 
 public:
   Cpu();
