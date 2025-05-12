@@ -3,7 +3,8 @@
 static void write_byte(struct system_bus *bus, uint16_t addr, uint8_t data);
 static void write_word(struct system_bus *bus, uint16_t addr, uint16_t data);
 static uint8_t read_byte(struct system_bus *bus, uint16_t addr);
-static uint16_t read_word(struct system_bus *bus, uint16_t addr);
+static uint16_t read_word_lsb(struct system_bus *bus, uint16_t addr);
+static uint16_t read_word_msb(struct system_bus *bus, uint16_t addr);
 
 struct system_bus bus = {
         .memory = {0},
@@ -11,7 +12,8 @@ struct system_bus bus = {
                 .write_byte = write_byte,
                 .write_word = write_word,
                 .read_byte = read_byte,
-                .read_word = read_word
+                .read_word_lsb = read_word_lsb,
+                .read_word_msb = read_word_msb
         }
 };
 
@@ -31,9 +33,14 @@ static uint8_t read_byte(struct system_bus *bus, uint16_t addr)
         return bus->memory[addr];
 }
 
-static uint16_t read_word(struct system_bus *bus, uint16_t addr)
+static uint16_t read_word_lsb(struct system_bus *bus, uint16_t addr)
 {
         return ((uint16_t)bus->memory[addr+1] << 8 ) | (uint16_t)bus->memory[addr];
+}
+
+static uint16_t read_word_msb(struct system_bus *bus, uint16_t addr)
+{
+        return ((uint16_t)bus->memory[addr] << 8 ) | (uint16_t)bus->memory[addr+1]; 
 }
 
 

@@ -17,7 +17,8 @@ struct system_bus_ops
         const write_byte_fn write_byte;
         const write_word_fn write_word;
         const read_byte_fn read_byte;
-        const read_word_fn read_word;
+        const read_word_fn read_word_lsb;
+        const read_word_fn read_word_msb;
 };
 
 struct system_bus 

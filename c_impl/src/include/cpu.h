@@ -70,8 +70,11 @@ union cpu_registers
         
 };
 
+typedef void(*update_pc_fn)(struct cpu *cpu, uint8_t val);
+
 struct cpu_ops{
-        const ins_execution *execute; 
+        const ins_execution *execute;
+        const update_pc_fn update_pc;
 };
 
 struct cpu
