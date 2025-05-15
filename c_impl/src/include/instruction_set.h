@@ -81,55 +81,54 @@
 #define LD_C_L          0x4D
 #define LD_C_IND_HL     0x4E
 #define LD_C_A          0x4F
-/*
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
-#define
+#define LD_D_B          0x50
+#define LD_D_C          0x51
+#define LD_D_D          0x52
+#define LD_D_E          0x53
+#define LD_D_H          0x54
+#define LD_D_L          0x55
+#define LD_D_IND_HL     0x56
+#define LD_D_A          0x57
+#define LD_E_B          0x58
+#define LD_E_C          0x59
+#define LD_E_D          0x5A
+#define LD_E_E          0x5B
+#define LD_E_H          0x5C
+#define LD_E_L          0x5D
+#define LD_E_IND_HL     0x5E
+#define LD_E_A          0x5F
+#define LD_H_B          0x60
+#define LD_H_C          0x61
+#define LD_H_D          0x62
+#define LD_H_E          0x63
+#define LD_H_H          0x64
+#define LD_H_L          0x65
+#define LD_H_IND_HL     0x66
+#define LD_H_A          0x67
+#define LD_L_B          0x68
+#define LD_L_C          0x69
+#define LD_L_D          0x6A
+#define LD_L_E          0x6B
+#define LD_L_H          0x6C
+#define LD_L_L          0x6D
+#define LD_L_IND_HL     0x6E
+#define LD_L_A          0x6F
+#define LD_IND_HL_B     0x70
+#define LD_IND_HL_C     0x71
+#define LD_IND_HL_D     0x72
+#define LD_IND_HL_E     0x73
+#define LD_IND_HL_H     0x74
+#define LD_IND_HL_L     0x75
+#define HALT            0x76
+#define LD_IND_HL_A     0x77
+#define LD_A_B          0x78
+#define LD_A_C          0x79
+#define LD_A_D          0x7A
+#define LD_A_E          0x7B
+#define LD_A_H          0x7C
+#define LD_A_L          0x7D
+#define LD_A_IND_HL     0x7E
+#define LD_A_A          0x7F
 #define
 #define
 #define

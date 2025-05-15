@@ -7,18 +7,13 @@
 
 struct system_bus;
 
-typedef void (*write_byte_fn)(struct system_bus *bus, uint16_t addr, uint8_t data);
-typedef void (*write_word_fn)(struct system_bus *bus, uint16_t addr, uint16_t data);
-typedef uint8_t (*read_byte_fn)(struct system_bus *bus, uint16_t addr);
-typedef uint16_t (*read_word_fn)(struct system_bus *bus, uint16_t addr);
+typedef uint8_t (*read_byte_fn)(struct system_bus * bus, uint16_t addr);
+typedef void (*write_byte_fn)(struct system_bus * bus, uint16_t addr, uint8_t val);
 
-struct system_bus_ops 
+struct system_bus_ops
 {
-        const write_byte_fn write_byte;
-        const write_word_fn write_word;
-        const read_byte_fn read_byte;
-        const read_word_fn read_word_lsb;
-        const read_word_fn read_word_msb;
+        read_byte_fn read_byte;
+        write_byte_fn write_byte;
 };
 
 struct system_bus 
@@ -28,5 +23,11 @@ struct system_bus
 };
 
 extern struct system_bus bus;
+
+#define bus_read_byte(addr) \
+        bus.ops.read_byte(&bus, addr)
+
+#define bus_write_byte(addr, val) \
+        bus.ops.write_byte(&bus, addr, val)
 
 #endif /* _BUS_S */
