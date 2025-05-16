@@ -1,42 +1,21 @@
 #include "instructions.h"
 #include "instruction_set.h"
-#include "bus.h"
-#include "cpu.h"
 
 #include <stdio.h>
 
-static void load_r8_d8(struct cpu *cpu, enum cpu_reg_byte reg);
-static void load_r8_d16(struct cpu *cpu, enum cpu_reg_word reg);
-static void load_r8_a8(struct cpu *cpu, enum cpu_reg_byte reg, uint8_t addr);
-static void load_r8_a16(struct cpu *cpu, enum cpu_reg_byte reg, uint16_t addr);
-static void load_r16_d16(struct cpu *cpu, enum cpu_reg_word reg);
-
-static void nop(struct cpu *cpu);
-static void load_bc_d16(struct cpu *cpu);
-
-const ins_execution execution[N_INSTRUCTIONS] = {
-        [NOP] = nop,
-        [LD_BC_D16] = load_bc_d16
+const struct instruction instructions[N_INSTRUCTIONS] = {
+        [NOP] = {INS_TYPE_MISC, {INS_SIZE_NONE, INS_ADDR_NONE, INS_REG_NONE}, {INS_SIZE_NONE, INS_ADDR_NONE, INS_REG_NONE}, 1, INS_COND_NONE},
+        [LD_BC_U16] = {INS_TYPE_MISC, {INS_SIZE_NONE, INS_ADDR_NONE, INS_REG_NONE}, {INS_SIZE_NONE, INS_ADDR_NONE, INS_REG_NONE}, 1, INS_COND_NONE},
+        [LD_IND_BC_A] = {INS_TYPE_MISC, {INS_SIZE_NONE, INS_ADDR_NONE, INS_REG_NONE}, {INS_SIZE_NONE, INS_ADDR_NONE, INS_REG_NONE}, 1, INS_COND_NONE}
 };
 
-static void load_r8_d8(struct cpu *cpu, enum cpu_reg_byte reg)
+struct instruction get_instruction(uint8_t opcode)
 {
-        printf("load_r8_d8 with byte reg: %d\n", reg);
+        return instructions[NOP];
 }
 
-static void load_r16_d16(struct cpu *cpu, enum cpu_reg_word reg)
+int main()
 {
-        printf("load_r16_d16 with word reg: %d\n", reg);
+        printf("Hello from instructions.c\n");
+        return 0;
 }
-
-static void nop(struct cpu *cpu)
-{
-        printf("NOP\n");
-        cpu->regs.word.pc++;
-}
-
-static void load_bc_d16(struct cpu *cpu)
-{
-        load_r16_d16(cpu, BC);
-}
- 
