@@ -8,6 +8,8 @@ struct cpu_context context = {
         .regs.bytes = {0} 
 };
 
+uint8_t mem[0xFFFF] = {0};
+
 // Local function protorypes
 static void update_pc(struct cpu_context * context, uint8_t val);
 static uint8_t read_byte(struct cpu_context * context, uint16_t addr);
@@ -48,12 +50,12 @@ static void write_byte(struct cpu_context * context, uint16_t addr, uint8_t val)
         printf("NOT IMPLEMENTED");
 }
 
-static void write_word(struct cpu_context * context, uint16_t addr, uint8_t val)
+static void write_word(struct cpu_context * context, uint16_t addr, uint16_t val)
 {
         printf("NOT IMPLEMENTED");
 }
 
-static instruction fetch(struct cpu_context * context)
+static struct instruction fetch(struct cpu_context * context)
 {
         uint8_t opcode = read_byte(context, context->regs.words[PC]);
         return get_instruction(opcode);

@@ -20,7 +20,9 @@ enum cpu_reg_word
         AF = 0,
         BC = 1,
         DE = 2,
-        HL = 3
+        HL = 3,
+        SP = 4,
+        PC = 5
 };
 
 union cpu_registers

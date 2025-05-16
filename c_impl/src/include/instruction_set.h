@@ -129,6 +129,7 @@
 #define LD_A_L          0x7D
 #define LD_A_IND_HL     0x7E
 #define LD_A_A          0x7F
+/*
 #define
 #define
 #define
