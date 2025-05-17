@@ -12,7 +12,7 @@ typedef uint8_t*(*addr_mode_fn)(struct cpu_context * context, const struct ins_o
 static void update_pc(struct cpu_context * context, uint8_t val);
 static const struct instruction* fetch(struct cpu_context * context);
 
-static uint8_t read_byte(struct cpu_context * context, uint16_t addr);
+static uint8_t* read_byte(struct cpu_context * context, uint16_t addr);
 static uint16_t read_word(struct cpu_context * context, uint16_t addr);
 static void write_byte(struct cpu_context * context, uint16_t addr, uint8_t val);
 static void write_word(struct cpu_context * context, uint16_t addr, uint16_t val);
@@ -81,16 +81,14 @@ static void update_pc(struct cpu_context * context, uint8_t val)
 
 static const struct instruction* fetch(struct cpu_context * context)
 {
-        uint8_t opcode = read_byte(context, context->regs.words[PC]);
+        uint8_t opcode = *read_byte(context, context->regs.words[PC]);
         return get_instruction(opcode);
 }
 
-static uint8_t read_byte(struct cpu_context * context, uint16_t addr)
+static uint8_t* read_byte(struct cpu_context * context, uint16_t addr)
 {
-        update_pc(context, 1);
-        
          // read from memory -> to externalize
-        return mem[addr];
+        return &mem[addr];
 }
 
 static uint16_t read_word(struct cpu_context * context, uint16_t addr)
@@ -100,7 +98,8 @@ static uint16_t read_word(struct cpu_context * context, uint16_t addr)
 
 static void write_byte(struct cpu_context * context, uint16_t addr, uint8_t val)
 {
-        printf("NOT IMPLEMENTED");
+        // write to memory -> to externalize
+        mem[addr] = val;
 }
 
 static void write_word(struct cpu_context * context, uint16_t addr, uint16_t val)
@@ -178,7 +177,7 @@ static void exec_misc_ins(struct cpu_context * context, const struct instruction
 
 static uint8_t* addr_mode_none(struct cpu_context * context, const struct ins_operand * operand)
 {
-        printf("NOT_IMPLEMENTED");
+        printf("UNREACHBLE: addr_mode_none");
 }
 
 static uint8_t* addr_mode_reg(struct cpu_context * context, const struct ins_operand * operand)
@@ -196,37 +195,60 @@ static uint8_t* addr_mode_reg(struct cpu_context * context, const struct ins_ope
 
 static uint8_t* addr_mode_reg_ptr(struct cpu_context * context, const struct ins_operand * operand)
 {
-        printf("NOT IMPLEMENTED");
+        uint16_t addr = context->regs.words[operand->reg_name];
+        return read_byte(context, addr);
 }
 
 static uint8_t* addr_mode_dir_u8(struct cpu_context * context, const struct ins_operand * operand)
 {
-        printf("NOT IMPLEMENTED");
+        uint8_t* res = read_byte(context, context->regs.words[PC]);
+        update_pc(context, 1);
+        return res;
 }
 
 static uint8_t* addr_mode_dir_u16(struct cpu_context * context, const struct ins_operand * operand)
 {
-        printf("NOT IMPLEMENTED");
+        uint8_t* res = read_byte(context, context->regs.words[PC]);
+        update_pc(context, 2);
+        return res;
 }
 
 static uint8_t* addr_mode_addr_u8(struct cpu_context * context, const struct ins_operand * operand)
 {
-        printf("NOT IMPLEMENTED");
+        uint8_t* addr_low = read_byte(context, context->regs.words[PC]);
+        uint16_t addr = 0xFF00 & (uint16_t)(*addr_low);
+        uint8_t* res = read_byte(context, addr);
+        update_pc(context, 1);
+        return res;
 }
 
 static uint8_t* addr_mode_addr_u16(struct cpu_context * context, const struct ins_operand * operand)
 {
-        printf("NOT IMPLEMENTED");
+        uint16_t addr = *(uint16_t*)read_byte(context, context->regs.words[PC]);
+        uint8_t* res = read_byte(context, addr);
+        update_pc(context, 2);
+        return res;
 }
 
 static uint8_t* addr_mode_addr_s8(struct cpu_context * context, const struct ins_operand * operand)
 {
-        printf("NOT IMPLEMENTED");
+        uint8_t* addr_s = read_byte(context, context->regs.words[PC]);
+        update_pc(context, 1);
+        uint16_t addr = context->regs.words[PC] + (int8_t)*addr_s;
+        return read_byte(context, addr);
 }
 
 int main()
 {
         printf("Hello from CPU\n");
+        
+        mem[0] = 0x44;
+        mem[1] = 0x55;
+
+        struct ins_operand op = {INS_SIZE_BIT16, INS_ADDR_DIR_U16, INS_REG_NONE};
+        uint16_t* val = (uint16_t*)addr_mode_dir_u16(&context, &op);
+        printf("value: %d\n", *val);
+
         run(&context);
         return 0;
 }
