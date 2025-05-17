@@ -1,0 +1,1 @@
+gcc -o test_suite test_suite.c ../src/cpu.c ../src/instructions.c ../src/bus.c -I../src/include -I./ -DTESTING

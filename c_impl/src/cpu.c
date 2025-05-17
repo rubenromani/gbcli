@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef TESTING
+#define static 
+#endif
+
 #include "cpu.h"
 #include "instructions.h"
 
@@ -177,7 +181,7 @@ static void exec_misc_ins(struct cpu_context * context, const struct instruction
 
 static uint8_t* addr_mode_none(struct cpu_context * context, const struct ins_operand * operand)
 {
-        printf("UNREACHBLE: addr_mode_none");
+        return &mem[0x00];
 }
 
 static uint8_t* addr_mode_reg(struct cpu_context * context, const struct ins_operand * operand)
@@ -195,7 +199,7 @@ static uint8_t* addr_mode_reg(struct cpu_context * context, const struct ins_ope
 
 static uint8_t* addr_mode_reg_ptr(struct cpu_context * context, const struct ins_operand * operand)
 {
-        uint16_t addr = context->regs.words[operand->reg_name];
+        uint16_t addr = context->regs.words[operand->reg_name & WORD_REG_MASK];
         return read_byte(context, addr);
 }
 
@@ -216,7 +220,7 @@ static uint8_t* addr_mode_dir_u16(struct cpu_context * context, const struct ins
 static uint8_t* addr_mode_addr_u8(struct cpu_context * context, const struct ins_operand * operand)
 {
         uint8_t* addr_low = read_byte(context, context->regs.words[PC]);
-        uint16_t addr = 0xFF00 & (uint16_t)(*addr_low);
+        uint16_t addr = 0xFF00 | (uint16_t)(*addr_low);
         uint8_t* res = read_byte(context, addr);
         update_pc(context, 1);
         return res;
@@ -233,22 +237,8 @@ static uint8_t* addr_mode_addr_u16(struct cpu_context * context, const struct in
 static uint8_t* addr_mode_addr_s8(struct cpu_context * context, const struct ins_operand * operand)
 {
         uint8_t* addr_s = read_byte(context, context->regs.words[PC]);
-        update_pc(context, 1);
         uint16_t addr = context->regs.words[PC] + (int8_t)*addr_s;
+        printf("pc: %x, addr: %x, offset: %d\n", context->regs.words[PC], addr, (int8_t)(*addr_s));
         return read_byte(context, addr);
 }
 
-int main()
-{
-        printf("Hello from CPU\n");
-        
-        mem[0] = 0x44;
-        mem[1] = 0x55;
-
-        struct ins_operand op = {INS_SIZE_BIT16, INS_ADDR_DIR_U16, INS_REG_NONE};
-        uint16_t* val = (uint16_t*)addr_mode_dir_u16(&context, &op);
-        printf("value: %d\n", *val);
-
-        run(&context);
-        return 0;
-}

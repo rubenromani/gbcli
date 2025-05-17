@@ -7,12 +7,12 @@ enum cpu_reg_byte
 {
         A = 0,
         F = 1,
-        B = 2,
-        C = 3,
-        D = 4,
-        E = 5,
-        H = 6,
-        L = 7
+        C = 2,
+        B = 3,
+        E = 4,
+        D = 5,
+        L = 6,
+        H = 7
 };
 
 enum cpu_reg_word
