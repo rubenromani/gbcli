@@ -12,6 +12,17 @@
 
 #define N_INSTRUCTIONS 0xFF  /* Maximum number of instruction opcodes */
 
+#define N_INS_TYPE 7
+#define N_ADDR_MODE 8
+
+#define INCDEC_U8_MASK 0x01
+#define INCDEC_U16_MASK 0x08
+#define INC_MASK_VALUE 0x00
+#define DEC_MASK_VALUE 0x01
+
+#define WORD_REG_MASK 0x3
+
+
 /*
  * ins_type - Instruction type categories
  *
@@ -118,6 +129,7 @@ struct ins_operand
  */
 struct instruction
 {
+        uint8_t opcode;                   /* Instruction opcode */ 
         enum ins_type type;               /* Instruction type */
         struct ins_operand operand1;      /* First operand */
         struct ins_operand operand2;      /* Second operand */
@@ -134,6 +146,6 @@ struct instruction
  *
  * Return: Populated instruction structure representing the decoded opcode
  */
-struct instruction get_instruction(uint8_t opcode);
+const struct instruction* get_instruction(uint8_t opcode);
 
 #endif /* _INSTRUCTION_H */
