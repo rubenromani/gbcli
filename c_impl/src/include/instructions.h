@@ -14,6 +14,7 @@
 
 #define N_INS_TYPE 7
 #define N_ADDR_MODE 8
+#define N_FLAGS 4
 
 #define INCDEC_U8_MASK 0x01
 #define INCDEC_U16_MASK 0x08
@@ -29,8 +30,7 @@
  * Categorizes instructions by their general operation, allowing the emulator
  * to dispatch to appropriate handlers.
  */
-enum ins_type
-{
+enum ins_type {
         INS_TYPE_LOAD,     /* Register/memory load operations */
         INS_TYPE_ALU,      /* Arithmetic and logical operations */
         INS_TYPE_INCDEC,   /* Increment/decrement operations */
@@ -46,8 +46,7 @@ enum ins_type
  * Defines how the operands are accessed and interpreted during instruction
  * execution.
  */
-enum ins_addr_mode
-{
+enum ins_addr_mode {
         INS_ADDR_NONE,        /* None */
         INS_ADDR_REG,         /* Register direct mode */
         INS_ADDR_REG_PTR,     /* Indirect register (pointer) mode */
@@ -63,8 +62,7 @@ enum ins_addr_mode
  *
  * Specifies whether an operation works on 8-bit or 16-bit data.
  */
-enum ins_operand_size
-{
+enum ins_operand_size {
         INS_SIZE_NONE,        /* None */
         INS_SIZE_BIT8,        /* 8-bit operand */
         INS_SIZE_BIT16        /* 16-bit operand */
@@ -76,8 +74,7 @@ enum ins_operand_size
  * Enumeration of available CPU registers. Registers 0-7 are 8-bit,
  * while 8-11 are 16-bit register pairs.
  */
-enum ins_reg_name
-{
+enum ins_reg_name {
         INS_REG_A = 0,       /* Accumulator */
         INS_REG_F,           /* Flags register */
         INS_REG_C,           /* C register */
@@ -94,13 +91,25 @@ enum ins_reg_name
 };
 
 /*
+ * ins_flag_op - Possible operation for a flag
+ *
+ * Used to determine wich operations has to be performed
+ * on for a specific flag.
+ * */
+enum ins_flag_op {
+        SET,                /* Set the flag */
+        RESET,              /* Reset the flag */
+        EVAL,               /* Evaluate the flag */
+        NONE                /* No operation */
+};
+
+/*
  * ins_condition - Condition codes for conditional instructions
  *
  * Used by conditional operations to determine whether the instruction
  * should be executed based on CPU flag states.
  */
-enum ins_condition
-{
+enum ins_condition {
         INS_COND_NONE,        /* Unconditional execution */
         INS_COND_CARRY,       /* Execute if carry flag is set */
         INS_COND_NO_CARRY,    /* Execute if carry flag is clear */
@@ -116,9 +125,9 @@ enum ins_condition
  */
 struct ins_operand
 {
-        enum ins_operand_size size;        /* Operand size (8/16-bit) */
-        enum ins_addr_mode addr_mode; /* Addressing mode */
-        enum ins_reg_name reg_name;        /* Register identifier if applicable */
+        enum ins_operand_size size;       /* Operand size (8/16-bit) */
+        enum ins_addr_mode addr_mode;     /* Addressing mode */
+        enum ins_reg_name reg_name;       /* Register identifier if applicable */
 };
 
 /*
@@ -129,12 +138,13 @@ struct ins_operand
  */
 struct instruction
 {
-        uint8_t opcode;                   /* Instruction opcode */ 
-        enum ins_type type;               /* Instruction type */
-        struct ins_operand operand1;      /* First operand */
-        struct ins_operand operand2;      /* Second operand */
-        uint8_t cycles;                   /* Clock cycles required for execution */
-        enum ins_condition condition;     /* Execution condition (if any) */
+        uint8_t opcode;                       /* Instruction opcode */ 
+        enum ins_type type;                   /* Instruction type */
+        struct ins_operand operand1;          /* First operand */
+        struct ins_operand operand2;          /* Second operand */
+        enum ins_flag_op flag_ops[N_FLAGS];   /* Flag operations */
+        uint8_t cycles;                       /* Clock cycles required for execution */
+        enum ins_condition condition;         /* Execution condition (if any) */
 };
 
 /*

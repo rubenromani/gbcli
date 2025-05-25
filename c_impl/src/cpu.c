@@ -8,13 +8,23 @@
 #include "cpu.h"
 #include "instructions.h"
 
+#define SET_FLAG(context_ptr, flag) (context_ptr->regs.bytes[F] |= (1 << (flag+FLAG_BIT_OFFSET)))
+#define RESET_FLAG(context_ptr, flag) (context_ptr->regs.bytes[F] &= ~(1 << (flag+FLAG_BIT_OFFSET))) 
+
 // Local types
 typedef void(*exec_ins_fn)(struct cpu_context * context, const struct instruction * ins);
 typedef uint8_t*(*addr_mode_fn)(struct cpu_context * context, const struct ins_operand * operand);
+typedef void(*eval_flag_fn)(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val);
 
 // Local function protorypes
 static void update_pc(struct cpu_context * context, uint8_t val);
 static const struct instruction* fetch(struct cpu_context * context);
+
+static void eval_flag_carry(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val);
+static void eval_flag_half_carry(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val);
+static void eval_flag_subtract(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val);
+static void eval_flag_zero(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val);
+static void eval_flags(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val, const enum ins_flag_op * flag_ops);
 
 static uint8_t* read_byte(struct cpu_context * context, uint16_t addr);
 static uint16_t read_word(struct cpu_context * context, uint16_t addr);
@@ -66,6 +76,13 @@ addr_mode_fn addr_mode[N_ADDR_MODE] = {
         [INS_ADDR_ADDR_S8] = addr_mode_addr_s8
 };
 
+eval_flag_fn eval_flag[N_FLAGS] = {
+        [CARRY] = eval_flag_carry,
+        [HALF_CARRY] = eval_flag_half_carry,
+        [SUBTRACT] = eval_flag_subtract,
+        [ZERO] = eval_flag_zero,
+};
+
 // Public functions
 
 void run(struct cpu_context * context)
@@ -87,6 +104,76 @@ static const struct instruction* fetch(struct cpu_context * context)
 {
         uint8_t opcode = *read_byte(context, context->regs.words[PC]);
         return get_instruction(opcode);
+}
+
+static void eval_flag_carry(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val)
+{
+        if (context->regs.flags.subtract == 0){
+                if (new_val < old_val) {
+                        SET_FLAG(context, CARRY);
+                } else {
+                        RESET_FLAG(context, CARRY);
+                }
+        } else {
+                if (new_val > old_val) {
+                        SET_FLAG(context, CARRY);
+                } else {
+                        RESET_FLAG(context, CARRY);
+                }
+        }
+}
+
+static void eval_flag_half_carry(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val)
+{
+        if (context->regs.flags.subtract == 0) {
+                if ((new_val & 0x0F) < (old_val & 0x0F)){
+                        SET_FLAG(context, HALF_CARRY);
+                } else {
+                        RESET_FLAG(context, HALF_CARRY);
+                }
+        } else {
+                if ((new_val & 0x0F) > (old_val & 0x0F)) {
+                        SET_FLAG(context, HALF_CARRY);
+                } else {
+                        RESET_FLAG(context, HALF_CARRY);
+                }
+        }
+}
+
+static void eval_flag_subtract(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val)
+{
+        printf("UNREACHBLE");
+}
+
+static void eval_flag_zero(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val)
+{
+        if (old_val != 0 && new_val == 0){
+                SET_FLAG(context, ZERO);
+        } else {
+                RESET_FLAG(context, ZERO);
+        }
+}
+
+static void eval_flags(struct cpu_context * context, const uint8_t old_val, const uint8_t new_val, const enum ins_flag_op * flag_ops)
+{
+        // starst from the back, the eval of the carry and half-carry requires the subtract flag
+        for(size_t i = N_FLAGS; i>0; i--) {
+                switch (flag_ops[i]){
+                case SET:
+                        SET_FLAG(context, i);
+                        break;
+                case RESET:
+                        RESET_FLAG(context, i);
+                        break;
+                case EVAL:
+                        eval_flag[i](context, old_val, new_val);
+                        break;
+                case NONE:
+                        break;
+                default:
+                        printf("UNREACHBLE");
+                }
+        }
 }
 
 static uint8_t* read_byte(struct cpu_context * context, uint16_t addr)
@@ -130,6 +217,7 @@ static void exec_incdec_ins(struct cpu_context * context, const struct instructi
         case INS_SIZE_BIT8:
                 switch (ins->opcode & INCDEC_U8_MASK) {
                 case INC_MASK_VALUE:
+                        uint8_t new_value = *val+1;
                         (*val)++;
                         break;
                 case DEC_MASK_VALUE:
@@ -242,3 +330,12 @@ static uint8_t* addr_mode_addr_s8(struct cpu_context * context, const struct ins
         return read_byte(context, addr);
 }
 
+#ifndef TESTING
+
+int main()
+{
+        printf("Hello from CPU");
+        return 0;
+}
+
+#endif

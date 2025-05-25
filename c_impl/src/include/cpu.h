@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define FLAG_BIT_OFFSET 4
+
 enum cpu_reg_byte
 {
         A = 0,
@@ -23,6 +25,14 @@ enum cpu_reg_word
         HL = 3,
         SP = 4,
         PC = 5
+};
+
+enum cpu_reg_flags 
+{
+        CARRY = 0,
+        HALF_CARRY = 1,
+        SUBTRACT = 2,
+        ZERO = 3
 };
 
 union cpu_registers
